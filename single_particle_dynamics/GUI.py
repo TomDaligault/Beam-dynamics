@@ -16,9 +16,6 @@ class ParticleSimulatorGUI:
         self.x_values = []
         self.xp_values = []
         self.s_values = []
-        self.all_x_values = []
-        self.all_xp_values = []
-        self.all_s_values = []
         self.s=0
 
     #lattice elements are subdivided using the step values below.
@@ -27,12 +24,10 @@ class ParticleSimulatorGUI:
         self.quad_steps = self.drift_steps
 
     #initialize parameters used in animations
-        #artists collects all traces on both plots
         #show_ellipse toggles the markers for cell-to-cell behavior
         #stop_animation is used to interrupt the animation
         #run_active is used to determine if the continue button should be enabled
         #animation_speeds is used to change the frames per second of the animation depending on the exercise
-        self.artists = []
         self.show_ellipse = True
         self.stop_animation = False
         self.run_active = False
@@ -311,6 +306,7 @@ class ParticleSimulatorGUI:
         self.run_button.config(state = 'normal')
         self.continue_button.config(state = 'disabled')
         self.animation_speed_dropdown.config(state = 'normal')
+        self.ellipse_scale.config(state = 'normal')
 
         for line in self.orbit_plot.get_lines():
             line.remove()
@@ -469,28 +465,19 @@ class ParticleSimulatorGUI:
         self.run_button.configure(state='disabled')
         self.continue_button.config(state = 'disabled')
         self.animation_speed_dropdown.configure(state='disabled')
+        self.ellipse_scale.config(state = 'disabled')
 
-        #store every line on the plot in a list named artists
-        #this allows the ellipse slider to work as intended while the animation is still running.
-        #could choose to simply this by only returning orbit_data and phase_space_data, but would have to disable ellipse_scale during animation
-        self.artists = []
-        for line in self.orbit_plot.get_lines():
-            self.artists.append(line)
-        for line in self.phase_space_plot.get_lines():
-            self.artists.append(line)
 
         #orbit_data and phase_space_data are use to plot data from the current run
         self.orbit_data, = self.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray')
         self.phase_space_data, = self.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray')
-        self.artists.append(self.orbit_data)
-        self.artists.append(self.phase_space_data)
 
 
         if self.show_ellipse is True:
             self.mark_ellipse(self.orbit_data, self.ellipse_scale.get())
             self.mark_ellipse(self.phase_space_data, self.ellipse_scale.get())
 
-        return self.artists
+        return [self.orbit_data, self.phase_space_data]
 
 #called for every frame of the animation function. frame is incremented after each call.
     def animation_frame(self, frame):
@@ -505,11 +492,12 @@ class ParticleSimulatorGUI:
         if frame == max(range(len(self.s_values))):
             self.run_button.configure(state='normal')
             self.animation_speed_dropdown.configure(state='normal')
+            self.ellipse_scale.config(state = 'normal')
 
             if self.run_active:
                 self.continue_button.config(state = 'normal')
 
-        return self.artists
+        return [self.orbit_data, self.phase_space_data]
 
 #matplotlib built-in animation
     def animate_orbit(self):
