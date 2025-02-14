@@ -6,8 +6,8 @@ import matplotlib.pyplot
 from matplotlib.figure import Figure
 
 class DigitEntry(ttk.Entry):
-	def __init__(self, frame, **kwargs):
-		super().__init__(frame, width=12, **kwargs)
+	def __init__(self, parent, **kwargs):
+		super().__init__(parent, width=12, **kwargs)
 		validation_function = self.register(self.validate_digit)
 		self.configure(validate='focusout', validatecommand = (validation_function, '%P'))
 
@@ -22,8 +22,8 @@ class DigitEntry(ttk.Entry):
 			return True
 
 class FloatEntry(ttk.Entry):
-	def __init__(self, frame, **kwargs):
-		super().__init__(frame, width=12, **kwargs)
+	def __init__(self, parent, **kwargs):
+		super().__init__(parent, width=12, **kwargs)
 		validation_function = self.register(self.validate_float)
 		self.configure(validate='focusout', validatecommand = (validation_function, '%P'))
 
@@ -58,19 +58,32 @@ class CellDiagram(tk.Canvas):
 class EllipseScale(tk.Scale):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
-        state = kwargs.get("state", "normal")
+        state = kwargs.get('state', 'normal')
         self.configure(length=200, width=8, bd=0, state=state,
-                                   showvalue = False, orient = 'horizontal', activebackground='#f0544f', troughcolor = "#e6e6e6",
+                                   showvalue = False, orient = 'horizontal', activebackground='#f0544f', troughcolor = '#e6e6e6',
                                    sliderlength=5)
 
     def configure(self, **kwargs):
-        if "state" in kwargs:
-            state = kwargs["state"]
-            if state == "disabled":
+        if 'state' in kwargs:
+            state = kwargs['state']
+            if state == 'disabled':
                 self.configure(bg = '#F0F0F0')
             else:
                 self.configure(bg = '#d9544f')
         super().configure(**kwargs)
+
+class PlaySpeedOptionMenu(tk.OptionMenu):
+    anim_speeds = {'fast': 0, 'med': 6, 'slow': 30}
+    def __init__(self, master, **kwargs):
+        self.speed_var = tk.StringVar(value='fast')
+        super().__init__(master, self.speed_var, *self.anim_speeds.keys(), **kwargs)
+
+    def set_speed(self, speed):
+        if speed in self.anim_speeds:
+            self.speed_var.set(speed)
+    
+    def get_speed(self):
+        return self.anim_speeds.get(self.speed_var.get(), 0)
 
 class plots(Figure):
     def __init__(self, figsize=(8.4, 4), *args, **kwargs):
@@ -131,8 +144,6 @@ class plots(Figure):
 
         self.orbit_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
         self.phase_space_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
-
-
 
     def show_ellipse(self, start, cell_length):
         for line in self.orbit_plot.get_lines():

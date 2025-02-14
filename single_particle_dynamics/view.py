@@ -97,17 +97,13 @@ class View(tk.Tk):
 		frame = tk.Frame(parent)
 		frame.pack(side='top', pady=10)
 
-		animation_speeds ={'fast': 0, 'med': 6, 'slow':30}
-		speed_option = tk.StringVar(frame)
-		speed_option.set('fast')
-
 		self.run_button = tk.Button(frame, text="run", command = self.controller.run_animation)
 		self.continue_button = tk.Button(frame, text="continue", state = 'disabled', command = self.controller.continue_animation)
 		self.clear_button = tk.Button(frame, text="clear", command = self.controller.clear_plots)
-		self.speed_options = tk.OptionMenu(frame, speed_option, *animation_speeds.keys())
+		self.anim_speed_option = CustomWidgets.PlaySpeedOptionMenu(frame)
 
 
-		self.speed_options.grid(row = 0, column = 0)
+		self.anim_speed_option.grid(row = 0, column = 0)
 		self.run_button.grid(row = 0, column = 1)
 		self.continue_button.grid(row = 0, column = 2)
 		self.clear_button.grid(row = 0, column = 3)

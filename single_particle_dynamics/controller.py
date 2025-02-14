@@ -52,7 +52,7 @@ class Controller:
 
 		self.view.run_button.config(state = 'normal')
 		self.view.continue_button.config(state = 'disabled')
-		self.view.speed_options.config(state = 'normal')
+		self.view.anim_speed_option.config(state = 'normal')
 		self.view.ellipse_scale.configure(state = 'normal')
 
 		self.view.figure.clear_plots()
@@ -87,7 +87,8 @@ class Controller:
 		self.show_ellipse = False
 		self.set_lattice_inputs(10, 8, 1)
 		self.set_particle_inputs(0.4, -0.1)
-		self.view.speed_options.grid_remove()
+		self.view.anim_speed_option.set_speed('slow')
+		self.view.anim_speed_option.grid_remove()
 		self.view.cell_diagram.grid_remove()
 		self.view.ellipse_scale.grid_remove()
 		self.view.continue_button.grid_remove()
@@ -97,23 +98,26 @@ class Controller:
 		self.show_ellipse = False
 		self.set_lattice_inputs(10, 8, 12)
 		self.set_particle_inputs(0.4, -0.1)
-		self.view.speed_options.grid_remove()
+		self.view.anim_speed_option.set_speed('med')
+		self.view.anim_speed_option.grid_remove()
 		self.view.cell_diagram.grid_remove()
 		self.view.ellipse_scale.grid_remove()
 		self.view.continue_button.grid_remove()
 		self.disable_widgets(self.view.particle_frame)
 
 	def set_exercise_3(self):
-		self.show_ellipse = True
 		self.set_exercise_2()
+		self.show_ellipse = True
+		self.view.anim_speed_option.set_speed('med')
 		self.set_lattice_inputs(10, 40, 25)
 		self.set_particle_inputs(0.4, -0.1)
 
 	def set_exercise_4(self):
 		self.show_ellipse = True
+		self.view.anim_speed_option.set_speed('fast')
 		self.set_lattice_inputs(10, 40, 25)
 		self.set_particle_inputs(0.4, -0.1)
-		self.view.speed_options.grid_remove()
+		self.view.anim_speed_option.grid_remove()
 		self.view.continue_button.grid_remove()
 		self.disable_widgets(self.view.particle_frame)
 
@@ -137,7 +141,7 @@ class Controller:
 	def run_animation(self):
 		self.view.run_button.configure(state = 'disabled')
 		self.view.continue_button.config(state = 'disabled')
-		self.view.speed_options.configure(state ='disabled')
+		self.view.anim_speed_option.configure(state ='disabled')
 		self.view.ellipse_scale.configure(state = 'disabled')
 		self.run_active = True
 
@@ -153,7 +157,7 @@ class Controller:
 	def continue_animation(self):
 		self.view.run_button.configure(state ='disabled')
 		self.view.continue_button.config(state = 'disabled')
-		self.view.speed_options.configure(state ='disabled')
+		self.view.anim_speed_option.configure(state ='disabled')
 		self.view.ellipse_scale.configure(state = 'disabled')
 
 		lattice = self.get_lattice()
@@ -184,7 +188,7 @@ class Controller:
 		self.animation = animation.FuncAnimation(fig = self.view.figure,
 									  func = self.animation_fuction,
 									  frames = len(self.trajectory[0]),
-									  interval = 0,
+									  interval = self.view.anim_speed_option.get_speed(),
 									  repeat = False,
 									  blit = True,
 									  init_func = self.init_animation)
@@ -196,7 +200,7 @@ class Controller:
 
 		if frame == max(range(len(self.trajectory[0]))):
 			self.view.run_button.configure(state ='normal')
-			self.view.speed_options.configure(state ='normal')
+			self.view.anim_speed_option.configure(state ='normal')
 			self.view.ellipse_scale.configure(state = 'normal')
 			if self.run_active:
 				self.view.continue_button.config(state = 'normal')
