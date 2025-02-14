@@ -5,11 +5,17 @@ from AcceleratorObjects import Particle, Lattice
 from model import Model
 from view import View
 
+
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 class Controller:
 	def __init__(self):
 		self.model = Model()
 		self.view = View(self)
-		self.show_ellipse = False
+		self.show_ellipse = True
+		self.run_active = False
+		self.cell_length = 1
 
 	def main(self):
 		self.view.main()
@@ -27,6 +33,8 @@ class Controller:
 				widget.configure(state='normal')
 		self.view.continue_button.configure(state='disabled')
 
+		self.clear_plots()
+
 		if button == 'exercise 1':
 			self.set_exercise_1()
 		if button == 'exercise 2':
@@ -37,7 +45,17 @@ class Controller:
 			self.set_exercise_4()
 
 	def clear_plots(self):
-		self.view.plots_figure.clear_plots()
+		try:
+			self.animation.pause()
+		except AttributeError:
+			pass 
+
+		self.view.run_button.config(state = 'normal')
+		self.view.continue_button.config(state = 'disabled')
+		self.view.speed_options.config(state = 'normal')
+		self.view.ellipse_scale.configure(state = 'normal')
+
+		self.view.figure.clear_plots()
 		self.view.canvas_widget.draw()
 
 	def set_lattice_inputs(self, drift_length, focal_length, num_cells):		
@@ -77,6 +95,8 @@ class Controller:
 
 	def set_exercise_2(self):
 		self.show_ellipse = False
+		self.set_lattice_inputs(10, 8, 12)
+		self.set_particle_inputs(0.4, -0.1)
 		self.view.speed_options.grid_remove()
 		self.view.cell_diagram.grid_remove()
 		self.view.ellipse_scale.grid_remove()
@@ -86,33 +106,103 @@ class Controller:
 	def set_exercise_3(self):
 		self.show_ellipse = True
 		self.set_exercise_2()
+		self.set_lattice_inputs(10, 40, 25)
+		self.set_particle_inputs(0.4, -0.1)
 
 	def set_exercise_4(self):
 		self.show_ellipse = True
+		self.set_lattice_inputs(10, 40, 25)
+		self.set_particle_inputs(0.4, -0.1)
 		self.view.speed_options.grid_remove()
 		self.view.continue_button.grid_remove()
+		self.disable_widgets(self.view.particle_frame)
 
-	def run_animation(self):
+	def get_particle(self):
 		x = float(self.view.x_Entry.get())
 		xp = float(self.view.xp_Entry.get())
 		s = 0
 
+		return Particle(x, xp, s)
+
+	def get_lattice(self):
 		drift_length = float(self.view.drift_Entry.get())
 		focal_length = float(self.view.focus_Entry.get())
 		num_cells = int(self.view.cell_Entry.get())
 
-		particle = Particle(x, xp, s)
-		lattice = Lattice(drift_length, focal_length, num_cells)
-		self.model.propagate(particle, lattice)
-		x_values, xp_values, s_values = self.model.particle_trajectory.values()
+		return Lattice(drift_length, focal_length, num_cells)
 
+	def update_ellipse(self, value):
+		self.view.figure.show_ellipse(start = int(value), cell_length = self.cell_length)
 
-		self.view.plots_figure.orbit_plot.plot(s_values, x_values)
-		self.view.plots_figure.phase_space_plot.plot(x_values, xp_values)
+	def run_animation(self):
+		self.view.run_button.configure(state = 'disabled')
+		self.view.continue_button.config(state = 'disabled')
+		self.view.speed_options.configure(state ='disabled')
+		self.view.ellipse_scale.configure(state = 'disabled')
+		self.run_active = True
 
-		self.view.plots_figure.relimit_orbit_plot(min(s_values), max(s_values), min(x_values), max(x_values))
-		self.view.plots_figure.relimit_phase_space_plot(min(x_values), max(x_values), min(xp_values), max(xp_values))
+		particle = self.get_particle()
+		lattice = self.get_lattice()
+		particle.propagate(lattice)
+
+		self.cell_length = lattice.cell_length
+		self.trajectory = particle.trajectory
+
+		self.animate_plots()
+
+	def continue_animation(self):
+		self.view.run_button.configure(state ='disabled')
+		self.view.continue_button.config(state = 'disabled')
+		self.view.speed_options.configure(state ='disabled')
+		self.view.ellipse_scale.configure(state = 'disabled')
+
+		lattice = self.get_lattice()
+		particle = Particle(self.trajectory[0][-1], self.trajectory[1][-1], self.trajectory[2][-1])
+		particle.propagate(lattice)
+
+		self.cell_length = lattice.cell_length
+		self.trajectory = particle.trajectory
+
+		self.animate_plots()
+
+	def init_animation(self):
+		x_max, xp_max, s_max = np.max(self.trajectory, axis=1)
+		x_min, xp_min, s_min = np.min(self.trajectory, axis=1)
+		self.view.figure.relimit_orbit_plot(s_min, s_max, x_min, x_max)
+		self.view.figure.relimit_phase_space_plot(x_min, x_max, xp_min, xp_max)
+
+		self.orbit_line, = self.view.figure.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray')
+		self.phase_space_line, = self.view.figure.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray')
+
+		if self.show_ellipse is True:
+			self.view.ellipse_scale.configure(to = self.cell_length)
+			self.view.figure.show_ellipse(cell_length = self.cell_length, start = self.view.ellipse_scale.get())
+
+		return self.orbit_line, self.phase_space_line
+
+	def animate_plots(self):
+		self.animation = animation.FuncAnimation(fig = self.view.figure,
+									  func = self.animation_fuction,
+									  frames = len(self.trajectory[0]),
+									  interval = 0,
+									  repeat = False,
+									  blit = True,
+									  init_func = self.init_animation)
 		self.view.canvas_widget.draw()
+
+	def animation_fuction(self, frame):
+		self.orbit_line.set_data(self.trajectory[2][:frame+1], self.trajectory[0][:frame+1])
+		self.phase_space_line.set_data(self.trajectory[0][:frame+1], self.trajectory[1][:frame+1])
+
+		if frame == max(range(len(self.trajectory[0]))):
+			self.view.run_button.configure(state ='normal')
+			self.view.speed_options.configure(state ='normal')
+			self.view.ellipse_scale.configure(state = 'normal')
+			if self.run_active:
+				self.view.continue_button.config(state = 'normal')
+
+		return self.orbit_line, self.phase_space_line
+		
 
 
 if __name__ == '__main__':

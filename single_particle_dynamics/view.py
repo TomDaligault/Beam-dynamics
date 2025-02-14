@@ -41,11 +41,11 @@ class View(tk.Tk):
 		self.user_frame.pack(side='left', fill='y')
 
 	def _make_figure_frame(self, frame):
-		frame = tk.Frame(frame, bg='black')
+		frame = tk.Frame(frame)
 		frame.pack(side='right', fill='both', expand=True)
 
-		self.plots_figure = CustomWidgets.plots()
-		self.canvas_widget = FigureCanvasTkAgg(figure=self.plots_figure, master=frame)
+		self.figure = CustomWidgets.plots()
+		self.canvas_widget = FigureCanvasTkAgg(figure=self.figure, master=frame)
 		self.canvas_widget.get_tk_widget().pack( fill='both', expand=True)
 
 	def _make_control_frame(self, frame):
@@ -102,7 +102,7 @@ class View(tk.Tk):
 		speed_option.set('fast')
 
 		self.run_button = tk.Button(frame, text="run", command = self.controller.run_animation)
-		self.continue_button = tk.Button(frame, text="continue", state = 'disabled')
+		self.continue_button = tk.Button(frame, text="continue", state = 'disabled', command = self.controller.continue_animation)
 		self.clear_button = tk.Button(frame, text="clear", command = self.controller.clear_plots)
 		self.speed_options = tk.OptionMenu(frame, speed_option, *animation_speeds.keys())
 
@@ -112,12 +112,11 @@ class View(tk.Tk):
 		self.continue_button.grid(row = 0, column = 2)
 		self.clear_button.grid(row = 0, column = 3)
 
-
 	def _make_ellipse_frame(self, parent):
 		self.ellipse_frame = tk.Frame(parent)
 		self.ellipse_frame.pack()
 		self.cell_diagram = CustomWidgets.CellDiagram(self.ellipse_frame)
-		self.ellipse_scale = CustomWidgets.EllipseScale(self.ellipse_frame)
+		self.ellipse_scale = CustomWidgets.EllipseScale(self.ellipse_frame, command = self.controller.update_ellipse)
 
 		self.cell_diagram.grid(row = 0, column = 0)
 		self.ellipse_scale.grid(row = 0, column = 0)

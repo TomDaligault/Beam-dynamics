@@ -58,33 +58,19 @@ class CellDiagram(tk.Canvas):
 class EllipseScale(tk.Scale):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
-        self.configure(length=200, width=8, bg='#d9544f', bd=0,
-								   showvalue = False, orient = 'horizontal', activebackground='#f0544f', troughcolor = "#e6e6e6",
-								   sliderlength=5)
+        state = kwargs.get("state", "normal")
+        self.configure(length=200, width=8, bd=0, state=state,
+                                   showvalue = False, orient = 'horizontal', activebackground='#f0544f', troughcolor = "#e6e6e6",
+                                   sliderlength=5)
 
-class LatticeControlFrame(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-
-        self.input_driftlength_label = tk.Label(self, text='drift length')
-        self.input_focallength_label = tk.Label(self, text='focal length')
-        self.num_cells_Label = tk.Label(self, text='cells')
-
-        self.drift_length_Entry = FloatEntry(self, width=12)
-        self.focal_length_Entry = FloatEntry(self, width=12)
-        self.num_cells_Entry = DigitEntry(self, width=12)
-
-        self.drift_length_Entry.insert(0, 10.0)
-        self.focal_length_Entry.insert(0, 8.0)
-        self.num_cells_Entry.insert(0, 12)
-
-        self.input_driftlength_label.grid(row=0, column=0)
-        self.input_focallength_label.grid(row=0, column=1)
-        self.num_cells_Label.grid(row=0, column=2)
-        self.drift_length_Entry.grid(row=1, column=0)
-        self.focal_length_Entry.grid(row=1, column=1)
-        self.num_cells_Entry.grid(row=1, column=2)
-
+    def configure(self, **kwargs):
+        if "state" in kwargs:
+            state = kwargs["state"]
+            if state == "disabled":
+                self.configure(bg = '#F0F0F0')
+            else:
+                self.configure(bg = '#d9544f')
+        super().configure(**kwargs)
 
 class plots(Figure):
     def __init__(self, figsize=(8.4, 4), *args, **kwargs):
@@ -98,6 +84,9 @@ class plots(Figure):
         self.phase_space_plot.set_title('phase space plot')
         self.phase_space_plot.set_xlabel('x')
         self.phase_space_plot.set_ylabel('x\'', rotation = 0)
+
+        self.orbit_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
+        self.phase_space_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
 
         self.tight_layout(pad=1.6)
         matplotlib.pyplot.tight_layout()
@@ -142,6 +131,8 @@ class plots(Figure):
 
         self.orbit_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
         self.phase_space_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
+
+
 
     def show_ellipse(self, start, cell_length):
         for line in self.orbit_plot.get_lines():
