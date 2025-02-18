@@ -20,6 +20,7 @@ class Controller:
 	def main(self):
 		self.view.main()
 
+#Sink only the selected button, restore the default UI, clear plots, then setup a specific exercise if necessary
 	def change_tab(self, button):
 		for _ in self.view.tab_buttons.values():
 			_.configure(relief='raised')
@@ -43,8 +44,12 @@ class Controller:
 			self.set_exercise_3()
 		if button == 'exercise 4':
 			self.set_exercise_4()
+		else:
+			pass
 
+	#Stop animation, restore UI controls, clear plots.
 	def clear_plots(self):
+		#Prevent funcanimation from throwing an error after clearing plots
 		try:
 			self.animation.pause()
 		except AttributeError:
@@ -72,10 +77,9 @@ class Controller:
 		self.view.x_Entry.insert(0, x)
 		self.view.xp_Entry.insert(0, xp)
 
-	def randomize(self):
+	def randomize_particle(self):
 		self.view.x_Entry.delete(0, tk.END)
 		self.view.xp_Entry.delete(0, tk.END)
-
 		self.view.x_Entry.insert(0, round(np.random.normal(),2))
 		self.view.xp_Entry.insert(0, round(np.random.normal(),2))
 
@@ -135,10 +139,13 @@ class Controller:
 
 		return Lattice(drift_length, focal_length, num_cells)
 
-	def update_ellipse(self, value):
-		self.view.figure.show_ellipse(start = int(value), cell_length = self.cell_length)
+	#sets plot markers from start value spaced by cell_length
+	#This method is called by self.view.ellipse_scale, which passes its current value as the start value
+	def update_ellipse(self, start):
+		self.view.figure.show_ellipse(start = int(start), cell_length = self.cell_length)
 
 	def run_animation(self):
+		#disable controls that cause bugs or visual artifacts while blitting
 		self.view.run_button.configure(state = 'disabled')
 		self.view.continue_button.config(state = 'disabled')
 		self.view.anim_speed_option.configure(state ='disabled')
@@ -155,13 +162,15 @@ class Controller:
 		self.animate_plots()
 
 	def continue_animation(self):
+		#disable controls that cause bugs or visual artifacts while blitting
 		self.view.run_button.configure(state ='disabled')
 		self.view.continue_button.config(state = 'disabled')
 		self.view.anim_speed_option.configure(state ='disabled')
 		self.view.ellipse_scale.configure(state = 'disabled')
 
-		lattice = self.get_lattice()
+		#use the last particle coordinates of the previous run as the starting coordinates of the next run
 		particle = Particle(self.trajectory[0][-1], self.trajectory[1][-1], self.trajectory[2][-1])
+		lattice = self.get_lattice()
 		particle.propagate(lattice)
 
 		self.cell_length = lattice.cell_length
@@ -170,18 +179,21 @@ class Controller:
 		self.animate_plots()
 
 	def init_animation(self):
+		#relimit the plot so all datapoints are within the plot window
 		x_max, xp_max, s_max = np.max(self.trajectory, axis=1)
 		x_min, xp_min, s_min = np.min(self.trajectory, axis=1)
 		self.view.figure.relimit_orbit_plot(s_min, s_max, x_min, x_max)
 		self.view.figure.relimit_phase_space_plot(x_min, x_max, xp_min, xp_max)
 
+		#initialize the line artists. FuncAnimation will set new data for these lines on each frame
 		self.orbit_line, = self.view.figure.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray')
 		self.phase_space_line, = self.view.figure.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray')
 
 		if self.show_ellipse is True:
 			self.view.ellipse_scale.configure(to = self.cell_length)
-			self.view.figure.show_ellipse(cell_length = self.cell_length, start = self.view.ellipse_scale.get())
+			self.view.figure.show_ellipse(start = self.view.ellipse_scale.get(), cell_length = self.cell_length)
 
+		#init function must return an iterable of artists necessary for blitting
 		return self.orbit_line, self.phase_space_line
 
 	def animate_plots(self):
@@ -194,10 +206,13 @@ class Controller:
 									  init_func = self.init_animation)
 		self.view.canvas_widget.draw()
 
+	#Called for each frame of FuncAnimation. Must return an iterable of artists for blitting
 	def animation_fuction(self, frame):
 		self.orbit_line.set_data(self.trajectory[2][:frame+1], self.trajectory[0][:frame+1])
 		self.phase_space_line.set_data(self.trajectory[0][:frame+1], self.trajectory[1][:frame+1])
 
+		#Restore UI controls at the end of the animation.
+		#Ideally would seperate this out
 		if frame == max(range(len(self.trajectory[0]))):
 			self.view.run_button.configure(state ='normal')
 			self.view.anim_speed_option.configure(state ='normal')

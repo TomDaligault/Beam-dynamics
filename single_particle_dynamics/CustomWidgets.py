@@ -5,12 +5,12 @@ import re
 import matplotlib.pyplot 
 from matplotlib.figure import Figure
 
+#DigitEntry turns text red on focus-out if the text contains anything other positive whole numbers
 class DigitEntry(ttk.Entry):
 	def __init__(self, parent, **kwargs):
 		super().__init__(parent, width=12, **kwargs)
 		validation_function = self.register(self.validate_digit)
 		self.configure(validate='focusout', validatecommand = (validation_function, '%P'))
-
 
 	def validate_digit(self, value):
 		pattern = r'^[1-9]\d*$'
@@ -21,12 +21,12 @@ class DigitEntry(ttk.Entry):
 			self.configure(foreground ='black')
 			return True
 
+#FloatEntry turns text red on focus-out if the text contains anything other than a float
 class FloatEntry(ttk.Entry):
 	def __init__(self, parent, **kwargs):
 		super().__init__(parent, width=12, **kwargs)
 		validation_function = self.register(self.validate_float)
 		self.configure(validate='focusout', validatecommand = (validation_function, '%P'))
-
 
 	def validate_float(self, value):
 		pattern = r'^-?\d+(\.\d+)?$'
@@ -37,6 +37,7 @@ class FloatEntry(ttk.Entry):
 			self.configure(foreground ='black')
 			return True
 
+#CellDiagram is a canvas object using rectangles and ovals to make a rough FODO cell diagram
 class CellDiagram(tk.Canvas):
     def __init__(self, parent, width=200, height=100, **kwargs):
         super().__init__(parent, width=width, height=height, **kwargs)
@@ -55,6 +56,7 @@ class CellDiagram(tk.Canvas):
         self.create_oval(2 + width/2 + x_offset, -y_offset/2, 3*width/4 + x_offset, height + y_offset/2 + 3, fill='#F0F0F0', width=0)
         self.create_rectangle(2 + width/2, 2, 3*width/4 + 2, height+1)
 
+#A pre-configured tkinter scale. Changes color if disabled.
 class EllipseScale(tk.Scale):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
@@ -85,6 +87,7 @@ class PlaySpeedOptionMenu(tk.OptionMenu):
     def get_speed(self):
         return self.anim_speeds.get(self.speed_var.get(), 0)
 
+#Custom matplotlib Figure with preconfigured subplots, titles, and axes. 
 class plots(Figure):
     def __init__(self, figsize=(8.4, 4), *args, **kwargs):
         super().__init__(figsize = figsize, *args, **kwargs)

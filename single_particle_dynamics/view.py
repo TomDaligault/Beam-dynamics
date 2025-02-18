@@ -8,7 +8,7 @@ matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class View(tk.Tk):
-
+	#list of names used to dynamically create tab buttons
 	tab_names = ["exercise 1", "exercise 2", "exercise 3", 'exercise 4', ' ']
 
 
@@ -28,7 +28,7 @@ class View(tk.Tk):
 		self._make_control_frame(self.user_frame)
 
 		#control frame contains all UI frames.
-		#widgets inside these UI frames must use the grid() method
+		#widgets inside these UI frames must use the grid() method for the controller to manage their visibility correctly
 		self._make_lattice_frame(self.control_frame)
 		self._make_particle_frame(self.control_frame)
 		self._make_animation_frame(self.control_frame)
@@ -56,6 +56,7 @@ class View(tk.Tk):
 		frame = tk.Frame(frame)
 		frame.pack(side='top', fill='x')
 
+		#dynamically create buttons and assign them a command from the controller
 		for name in self.tab_names:
 			button = tk.Button(frame, text=name, command = lambda n=name: self.controller.change_tab(n))
 			self.tab_buttons[name] = button
@@ -91,7 +92,7 @@ class View(tk.Tk):
 		ttk.Label(self.particle_frame, text='Initial x\'').grid(row = 1, column = 0)
 		self.x_Entry.grid(row = 0, column = 1)
 		self.xp_Entry.grid(row = 1, column = 1)
-		tk.Button(self.particle_frame, text='random', command = self.controller.randomize).grid(row = 2, column = 0, columnspan =2, sticky='WE')
+		tk.Button(self.particle_frame, text='randomize', command = self.controller.randomize_particle).grid(row = 2, column = 0, columnspan =2, sticky='WE')
 
 	def _make_animation_frame(self, parent):
 		frame = tk.Frame(parent)
@@ -101,7 +102,6 @@ class View(tk.Tk):
 		self.continue_button = tk.Button(frame, text="continue", state = 'disabled', command = self.controller.continue_animation)
 		self.clear_button = tk.Button(frame, text="clear", command = self.controller.clear_plots)
 		self.anim_speed_option = CustomWidgets.PlaySpeedOptionMenu(frame)
-
 
 		self.anim_speed_option.grid(row = 0, column = 0)
 		self.run_button.grid(row = 0, column = 1)

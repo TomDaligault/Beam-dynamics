@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-'''Defines transfer matrices from give lattice parameters.
-Supports optionally subdividing lattice elements via quad_steps and drift_steps'''
+'''Defines transfer matrices from give lattice parameters.'''
+'''Supports optionally subdividing lattice elements via quad_steps and drift_steps. Default is 5 subdivisions.'''
 class Lattice:
     def __init__(self, drift_length, focal_length, num_cells, quad_steps = 5, drift_steps = 5):
         self.focal_length = focal_length
@@ -32,8 +32,9 @@ class Lattice:
                                         [0],
                                         [drift_length / drift_steps]])
 
-'''Defines the trajectory of a particle in (x, xp, s) space.
-Can be propagated through a defined lattice, appends trajectories with new coordinates after each element'''
+'''Defines the trajectory of a particle in (x, xp, s) space.'''
+'''Can be propagated through a defined lattice, appends trajectory with new coordinates after each element'''
+'''self.trajectory is a 3xn matrix. Each column corresponds to the (x, xp, s) coordinates of the particle at each location in the lattice'''
 class Particle:
     def __init__(self, x, xp, s=0):
         self.particle = np.array([[x],
