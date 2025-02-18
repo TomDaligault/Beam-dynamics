@@ -2,7 +2,6 @@ import tkinter as tk
 import numpy as np
 from AcceleratorObjects import Particle, Lattice
 
-from model import Model
 from view import View
 
 
@@ -11,7 +10,6 @@ import matplotlib.animation as animation
 
 class Controller:
 	def __init__(self):
-		self.model = Model()
 		self.view = View(self)
 		self.show_ellipse = True
 		self.run_active = False
