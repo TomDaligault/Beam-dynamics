@@ -121,7 +121,7 @@ class Controller:
 		self.set_particle_inputs(0.4, -0.1)
 		self.view.anim_speed_option.grid_remove()
 		self.view.continue_button.grid_remove()
-		self.disable_widgets(self.view.particle_frame)
+		self.disable_widgets(self.view.lattice_frame)
 
 	def get_particle(self):
 		x = float(self.view.x_Entry.get())
