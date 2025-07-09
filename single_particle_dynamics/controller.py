@@ -1,8 +1,9 @@
 import tkinter as tk
 import numpy as np
-from AcceleratorObjects import Particle, Lattice
+from AcceleratorObjects import Lattice
 
 from view import View
+import model
 
 
 import matplotlib.pyplot as plt
@@ -128,7 +129,7 @@ class Controller:
 		xp = float(self.view.xp_Entry.get())
 		s = 0
 
-		return Particle(x, xp, s)
+		return np.array([[x], [xp], [s]])
 
 	def get_lattice(self):
 		drift_length = float(self.view.drift_Entry.get())
@@ -152,12 +153,14 @@ class Controller:
 
 		particle = self.get_particle()
 		lattice = self.get_lattice()
-		particle.propagate(lattice)
-
+		self.trajectory = model.propagate(particle, lattice)
 		self.cell_length = lattice.cell_length
-		self.trajectory = particle.trajectory
 
-		self.animate_plots()
+		self.relimit_plots()
+
+		orbit_line, phase_space_line = self.init_artists()
+
+		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter)
 
 	def continue_animation(self):
 		#disable controls that cause bugs or visual artifacts while blitting
@@ -167,58 +170,61 @@ class Controller:
 		self.view.ellipse_scale.configure(state = 'disabled')
 
 		#use the last particle coordinates of the previous run as the starting coordinates of the next run
-		particle = Particle(self.trajectory[0][-1], self.trajectory[1][-1], self.trajectory[2][-1])
+		particle = self.trajectory[-1]
 		lattice = self.get_lattice()
-		particle.propagate(lattice)
+		self.trajectory = model.propagate(particle, lattice)
 
 		self.cell_length = lattice.cell_length
-		self.trajectory = particle.trajectory
 
-		self.animate_plots()
+		orbit_line, phase_space_line = self.init_artists()
+		self.relimit_plots()
+		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter)
 
-	def init_animation(self):
-		#relimit the plot so all datapoints are within the plot window
-		x_max, xp_max, s_max = np.max(self.trajectory, axis=1)
-		x_min, xp_min, s_min = np.min(self.trajectory, axis=1)
+	def relimit_plots(self):
+		x_max, xp_max, s_max = model.max_values(self.trajectory)
+		x_min, xp_min, s_min = model.min_values(self.trajectory)
 		self.view.figure.relimit_orbit_plot(s_min, s_max, x_min, x_max)
-		self.view.figure.relimit_phase_space_plot(x_min, x_max, xp_min, xp_max)
+		self.view.figure.relimit_phase_space_plot(x_min, x_max, xp_min, xp_max) 
 
+	def init_artists(self):
 		#initialize the line artists. FuncAnimation will set new data for these lines on each frame
-		self.orbit_line, = self.view.figure.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray')
-		self.phase_space_line, = self.view.figure.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray')
+		orbit_line, = self.view.figure.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray', animated=True)
+		phase_space_line, = self.view.figure.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray', animated=True)
 
 		if self.show_ellipse is True:
 			self.view.ellipse_scale.configure(to = self.cell_length)
 			self.view.figure.show_ellipse(start = self.view.ellipse_scale.get(), cell_length = self.cell_length)
+		return orbit_line, phase_space_line
 
-		#init function must return an iterable of artists necessary for blitting
-		return self.orbit_line, self.phase_space_line
-
-	def animate_plots(self):
+	def animate_plots(self, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter):
 		self.animation = animation.FuncAnimation(fig = self.view.figure,
 									  func = self.animation_fuction,
-									  frames = len(self.trajectory[0]),
+									  fargs = (orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter),
+									  frames = len(self.trajectory),
 									  interval = self.view.anim_speed_option.get_speed(),
 									  repeat = False,
-									  blit = True,
-									  init_func = self.init_animation)
-		self.view.canvas_widget.draw()
+									  blit = True)
 
 	#Called for each frame of FuncAnimation. Must return an iterable of artists for blitting
-	def animation_fuction(self, frame):
-		self.orbit_line.set_data(self.trajectory[2][:frame+1], self.trajectory[0][:frame+1])
-		self.phase_space_line.set_data(self.trajectory[0][:frame+1], self.trajectory[1][:frame+1])
+	def animation_fuction(self, frame, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter):
+		orbit_line.set_data(self.trajectory[:frame+1,2], self.trajectory[:frame+1,0])
+		phase_space_line.set_data(self.trajectory[:frame+1,0], self.trajectory[:frame+1,1])
+
+		self.view.figure.orbit_scatter.set_offsets(np.column_stack((self.trajectory[frame][2, 0], self.trajectory[frame][0, 0])))
+		self.view.figure.phase_space_scatter.set_offsets(np.column_stack((self.trajectory[frame][0, 0], self.trajectory[frame][1, 0])))
+
+
 
 		#Restore UI controls at the end of the animation.
 		#Ideally would seperate this out
-		if frame == max(range(len(self.trajectory[0]))):
+		if frame == max(range(len(self.trajectory))):
 			self.view.run_button.configure(state ='normal')
 			self.view.anim_speed_option.configure(state ='normal')
 			self.view.ellipse_scale.configure(state = 'normal')
 			if self.run_active:
 				self.view.continue_button.config(state = 'normal')
 
-		return self.orbit_line, self.phase_space_line
+		return orbit_line, phase_space_line, orbit_scatter, phase_space_scatter
 		
 
 

@@ -32,35 +32,6 @@ class Lattice:
                                         [0],
                                         [drift_length / drift_steps]])
 
-'''Defines the trajectory of a particle in (x, xp, s) space.'''
-'''Can be propagated through a defined lattice, appends trajectory with new coordinates after each element'''
-'''self.trajectory is a 3xn matrix. Each column corresponds to the (x, xp, s) coordinates of the particle at each location in the lattice'''
-class Particle:
-    def __init__(self, x, xp, s=0):
-        self.particle = np.array([[x],
-                             [xp],
-                             [s]])
-
-        self.trajectory = np.array(self.particle)
-
-    def propagate(self, lattice):
-        for _ in range(lattice.num_cells):
-            for _ in range(lattice.quad_steps):
-                self.particle = lattice.quad_s_vector + lattice.fquad_matrix @ self.particle
-                self.trajectory = np.concatenate((self.trajectory, self.particle), axis = 1)
-
-            for _ in range(lattice.drift_steps):
-                self.particle = lattice.drift_s_vector + lattice.drift_matrix @ self.particle
-                self.trajectory = np.concatenate((self.trajectory, self.particle), axis = 1)
-
-            for _ in range(lattice.quad_steps):
-                self.particle = lattice.quad_s_vector + lattice.dquad_matrix @ self.particle
-                self.trajectory = np.concatenate((self.trajectory, self.particle), axis = 1)
-
-            for _ in range(lattice.drift_steps):
-                self.particle = lattice.drift_s_vector + lattice.drift_matrix @ self.particle
-                self.trajectory = np.concatenate((self.trajectory, self.particle), axis = 1)
-
 if __name__ == '__main__':
     particle = Particle(10, 4, -0.1)
     lattice = Lattice( 10, 8, 1)
