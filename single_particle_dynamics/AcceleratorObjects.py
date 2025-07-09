@@ -31,12 +31,3 @@ class Lattice:
         self.drift_s_vector = np.array([[0],
                                         [0],
                                         [drift_length / drift_steps]])
-
-if __name__ == '__main__':
-    particle = Particle(10, 4, -0.1)
-    lattice = Lattice( 10, 8, 1)
-    particle.propagate(lattice)
-    # plt.plot(particle.trajectory[2], particle.trajectory[0])
-    # plt.show()
-
-    print(particle.trajectory[0][0])

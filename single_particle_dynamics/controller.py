@@ -46,46 +46,6 @@ class Controller:
 		else:
 			pass
 
-	#Stop animation, restore UI controls, clear plots.
-	def clear_plots(self):
-		#Prevent funcanimation from throwing an error after clearing plots
-		try:
-			self.animation.pause()
-		except AttributeError:
-			pass 
-
-		self.view.run_button.config(state = 'normal')
-		self.view.continue_button.config(state = 'disabled')
-		self.view.anim_speed_option.config(state = 'normal')
-		self.view.ellipse_scale.configure(state = 'normal')
-
-		self.view.figure.clear_plots()
-		self.view.canvas_widget.draw()
-
-	def set_lattice_inputs(self, drift_length, focal_length, num_cells):		
-		self.view.drift_Entry.delete(0, tk.END)
-		self.view.focus_Entry.delete(0, tk.END)
-		self.view.cell_Entry.delete(0, tk.END)
-		self.view.drift_Entry.insert(0, drift_length)
-		self.view.focus_Entry.insert(0, focal_length)
-		self.view.cell_Entry.insert(0, num_cells)
-
-	def set_particle_inputs(self, x, xp):
-		self.view.x_Entry.delete(0, tk.END)
-		self.view.xp_Entry.delete(0, tk.END)
-		self.view.x_Entry.insert(0, x)
-		self.view.xp_Entry.insert(0, xp)
-
-	def randomize_particle(self):
-		self.view.x_Entry.delete(0, tk.END)
-		self.view.xp_Entry.delete(0, tk.END)
-		self.view.x_Entry.insert(0, round(np.random.normal(),2))
-		self.view.xp_Entry.insert(0, round(np.random.normal(),2))
-
-	def disable_widgets(self, frame):
-		for widget in frame.children.values():
-			widget.configure(state='disabled')
-
 	def set_exercise_1(self):
 		self.show_ellipse = False
 		self.set_lattice_inputs(10, 8, 1)
@@ -124,6 +84,26 @@ class Controller:
 		self.view.continue_button.grid_remove()
 		self.disable_widgets(self.view.lattice_frame)
 
+	def set_lattice_inputs(self, drift_length, focal_length, num_cells):		
+		self.view.drift_Entry.delete(0, tk.END)
+		self.view.focus_Entry.delete(0, tk.END)
+		self.view.cell_Entry.delete(0, tk.END)
+		self.view.drift_Entry.insert(0, drift_length)
+		self.view.focus_Entry.insert(0, focal_length)
+		self.view.cell_Entry.insert(0, num_cells)
+
+	def set_particle_inputs(self, x, xp):
+		self.view.x_Entry.delete(0, tk.END)
+		self.view.xp_Entry.delete(0, tk.END)
+		self.view.x_Entry.insert(0, x)
+		self.view.xp_Entry.insert(0, xp)
+
+	def randomize_particle(self):
+		self.view.x_Entry.delete(0, tk.END)
+		self.view.xp_Entry.delete(0, tk.END)
+		self.view.x_Entry.insert(0, round(np.random.normal(),2))
+		self.view.xp_Entry.insert(0, round(np.random.normal(),2))
+
 	def get_particle(self):
 		x = float(self.view.x_Entry.get())
 		xp = float(self.view.xp_Entry.get())
@@ -137,6 +117,26 @@ class Controller:
 		num_cells = int(self.view.cell_Entry.get())
 
 		return Lattice(drift_length, focal_length, num_cells)
+
+	def disable_widgets(self, frame):
+		for widget in frame.children.values():
+			widget.configure(state='disabled')
+
+	#Stop animation, restore UI controls, clear plots.
+	def clear_plots(self):
+		#Prevent funcanimation from throwing an error after clearing plots
+		try:
+			self.animation.pause()
+		except AttributeError:
+			pass 
+
+		self.view.run_button.config(state = 'normal')
+		self.view.continue_button.config(state = 'disabled')
+		self.view.anim_speed_option.config(state = 'normal')
+		self.view.ellipse_scale.configure(state = 'normal')
+
+		self.view.figure.clear_plots()
+		self.view.canvas_widget.draw()
 
 	#sets plot markers from start value spaced by cell_length
 	#This method is called by self.view.ellipse_scale, which passes its current value as the start value
@@ -157,7 +157,6 @@ class Controller:
 		self.cell_length = lattice.cell_length
 
 		self.relimit_plots()
-
 		orbit_line, phase_space_line = self.init_artists()
 
 		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter)
@@ -212,8 +211,6 @@ class Controller:
 
 		self.view.figure.orbit_scatter.set_offsets(np.column_stack((self.trajectory[frame][2, 0], self.trajectory[frame][0, 0])))
 		self.view.figure.phase_space_scatter.set_offsets(np.column_stack((self.trajectory[frame][0, 0], self.trajectory[frame][1, 0])))
-
-
 
 		#Restore UI controls at the end of the animation.
 		#Ideally would seperate this out

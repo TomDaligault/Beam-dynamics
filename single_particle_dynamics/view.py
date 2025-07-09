@@ -116,6 +116,3 @@ class View(tk.Tk):
 
 		self.cell_diagram.grid(row = 0, column = 0)
 		self.ellipse_scale.grid(row = 0, column = 0)
-
-if __name__ == '__main__':
-	pass
