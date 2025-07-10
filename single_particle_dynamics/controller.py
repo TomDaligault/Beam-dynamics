@@ -159,7 +159,7 @@ class Controller:
 		self.relimit_plots()
 		orbit_line, phase_space_line = self.init_artists()
 
-		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter)
+		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter, callback=self.restore_ui_controls)
 
 	def continue_animation(self):
 		#disable controls that cause bugs or visual artifacts while blitting
@@ -177,7 +177,7 @@ class Controller:
 
 		orbit_line, phase_space_line = self.init_artists()
 		self.relimit_plots()
-		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter)
+		self.animate_plots(orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter, callback=self.restore_ui_controls)
 
 	def relimit_plots(self):
 		x_max, xp_max, s_max = model.max_values(self.trajectory)
@@ -195,33 +195,38 @@ class Controller:
 			self.view.figure.show_ellipse(start = self.view.ellipse_scale.get(), cell_length = self.cell_length)
 		return orbit_line, phase_space_line
 
-	def animate_plots(self, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter):
+	def animate_plots(self, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter, callback=None):
 		self.animation = animation.FuncAnimation(fig = self.view.figure,
 									  func = self.animation_fuction,
-									  fargs = (orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter),
+									  fargs = (callback, orbit_line, phase_space_line, self.view.figure.orbit_scatter, self.view.figure.phase_space_scatter),
 									  frames = len(self.trajectory),
 									  interval = self.view.anim_speed_option.get_speed(),
 									  repeat = False,
 									  blit = True)
 
 	#Called for each frame of FuncAnimation. Must return an iterable of artists for blitting
-	def animation_fuction(self, frame, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter):
+	def animation_fuction(self, frame, callback, orbit_line, phase_space_line, orbit_scatter, phase_space_scatter):
 		orbit_line.set_data(self.trajectory[:frame+1,2], self.trajectory[:frame+1,0])
 		phase_space_line.set_data(self.trajectory[:frame+1,0], self.trajectory[:frame+1,1])
 
 		self.view.figure.orbit_scatter.set_offsets(np.column_stack((self.trajectory[frame][2, 0], self.trajectory[frame][0, 0])))
 		self.view.figure.phase_space_scatter.set_offsets(np.column_stack((self.trajectory[frame][0, 0], self.trajectory[frame][1, 0])))
 
-		#Restore UI controls at the end of the animation.
-		#Ideally would seperate this out
-		if frame == max(range(len(self.trajectory))):
-			self.view.run_button.configure(state ='normal')
-			self.view.anim_speed_option.configure(state ='normal')
-			self.view.ellipse_scale.configure(state = 'normal')
-			if self.run_active:
-				self.view.continue_button.config(state = 'normal')
+		#If a callback function is provided, execute the callback at the end of the animation.
+		#Used to restore functionality to UI controls.
+		if frame == max(range(len(self.trajectory))) and callback:
+			callback()
 
 		return orbit_line, phase_space_line, orbit_scatter, phase_space_scatter
+
+#Used as a callback to restore UI controls at the end of the animation.
+	def restore_ui_controls(self):
+		self.view.run_button.configure(state ='normal')
+		self.view.anim_speed_option.configure(state ='normal')
+		self.view.ellipse_scale.configure(state = 'normal')
+		if self.run_active:
+			self.view.continue_button.config(state = 'normal')
+
 		
 
 
