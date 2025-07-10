@@ -11,7 +11,6 @@ class View(tk.Tk):
 	#list of names used to dynamically create tab buttons
 	tab_names = ["exercise 1", "exercise 2", "exercise 3", 'exercise 4', ' ']
 
-
 	def __init__(self, controller):
 		super().__init__()
 		self.title('view')

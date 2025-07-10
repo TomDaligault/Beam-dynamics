@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 import re
 
+import numpy as np
 import matplotlib.pyplot 
 from matplotlib.figure import Figure
+import matplotlib.animation as animation
 
 #DigitEntry turns text red on focus-out if the text contains anything other positive whole numbers
 class DigitEntry(ttk.Entry):
@@ -109,6 +111,57 @@ class plots(Figure):
         self.tight_layout(pad=1.6)
         matplotlib.pyplot.tight_layout()
 
+    def init_artists(self, show_ellipse=False, start=None, cell_length=None):
+        orbit_line, = self.orbit_plot.plot([],[], linewidth = 0.5, color = 'gray', animated=True)
+        phase_space_line, = self.phase_space_plot.plot([],[], linewidth = 0.5, color = 'gray', animated=True)
+
+        if show_ellipse:
+            orbit_line.set_markevery((start, cell_length))
+            orbit_line.set_marker('o')
+            orbit_line.set_markerfacecolor('#d9544f')
+            orbit_line.set_markeredgecolor('#d9544f')
+            phase_space_line.set_markevery((start, cell_length))
+            phase_space_line.set_marker('o')
+            phase_space_line.set_markerfacecolor('#d9544f')
+            phase_space_line.set_markeredgecolor('#d9544f')
+        
+        return orbit_line, phase_space_line
+
+    def animate_plots(self, trajectory, anim_speed=0, show_ellipse=False, start=None, cell_length=None, callback=None):
+        #New lines are made for each animation, lines from previous animations continue to exists unclear clear_plots is called.
+        orbit_line, phase_space_line = self.init_artists(show_ellipse, start, cell_length)
+
+        self.animation = animation.FuncAnimation(fig = self,
+                                      func = self.animation_fuction,
+                                      fargs = (trajectory, orbit_line, phase_space_line, callback),
+                                      frames = len(trajectory),
+                                      interval = anim_speed,
+                                      repeat = False,
+                                      blit = True)
+
+    #Called for each frame of FuncAnimation. Must return an iterable of artists for blitting
+    def animation_fuction(self, frame, trajectory, orbit_line, phase_space_line, callback):
+        orbit_line.set_data(trajectory[:frame+1,2], trajectory[:frame+1,0])
+        phase_space_line.set_data(trajectory[:frame+1,0], trajectory[:frame+1,1])
+
+        self.orbit_scatter.set_offsets(np.column_stack((trajectory[frame][2, 0], trajectory[frame][0, 0])))
+        self.phase_space_scatter.set_offsets(np.column_stack((trajectory[frame][0, 0], trajectory[frame][1, 0])))
+
+        #If a callback function is provided, execute the callback at the end of the animation.
+        #Used to restore functionality to UI controls.
+        if frame == max(range(len(trajectory))) and callback:
+            callback()
+
+        return orbit_line, phase_space_line, self.orbit_scatter, self.phase_space_scatter
+
+
+    #Pauses the animation. Used to prevent funcanimation from throwing errors after artists are clear from the plot.
+    def stop_animation(self):
+        try:
+            self.animation.pause()
+        except AttributeError:
+            pass 
+
     def relimit_orbit_plot(self, smin, smax, xmin, xmax):
         current_smin, current_smax, current_xmin, current_xmax = self.orbit_plot.axis()
 
@@ -142,6 +195,11 @@ class plots(Figure):
             self.phase_space_plot.set_ylim(ymax = xpmax*1.1)
 
     def clear_plots(self):
+        #Scatter plots can have their data cleared
+        self.orbit_scatter.set_offsets([0,0])
+        self.phase_space_scatter.set_offsets([0,0])
+
+        #Lines must be removed 
         for line in self.orbit_plot.get_lines():
                 line.remove()
         for line in self.phase_space_plot.get_lines():
@@ -164,3 +222,4 @@ class plots(Figure):
             line.set_markeredgecolor('#d9544f')
 
         self.canvas.draw()
+
