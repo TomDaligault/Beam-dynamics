@@ -5,13 +5,17 @@ from view import View
 import model
 
 class Controller:
-	def __init__(self):
-		self.view = View(self)
+	def __init__(self, view):
+		self.view = view
 		self.show_ellipse = True
 		self.run_active = False
 		self.cell_length = 1
 
 	def main(self):
+		self.view.register_callback('run_animation', self.run_animation)
+		self.view.register_callback('continue_animation', self.continue_animation)
+		self.view.register_callback('change_tab', self.change_tab)
+		self.view.register_callback('update_ellipse', self.update_ellipse)
 		self.view.main()
 
 #Sink only the selected button, restore the default UI, clear plots, then setup a specific exercise if necessary
@@ -97,5 +101,6 @@ class Controller:
 
 
 if __name__ == '__main__':
-	controller = Controller()
+	view = View()
+	controller = Controller(view)
 	controller.main()

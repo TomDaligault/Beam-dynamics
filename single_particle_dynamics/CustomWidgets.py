@@ -81,6 +81,7 @@ class EllipseScale(tk.Scale):
 			else:
 				self.configure(bg = '#d9544f')
 		super().configure(**kwargs)
+		
 
 class PlaySpeedOptionMenu(tk.OptionMenu):
 	anim_speeds = {'fast': 0, 'med': 6, 'slow': 30}

@@ -12,12 +12,15 @@ class View(tk.Tk):
 	#list of names used to dynamically create tab buttons
 	tab_names = ["exercise 1", "exercise 2", "exercise 3", 'exercise 4', ' ']
 
-	def __init__(self, controller):
+	def __init__(self):
 		super().__init__()
 		self.title('view')
-		self.controller = controller
+
+		#callback registry
+		self.callback_registry = {}
+
 		#dictionary of tab button and their names, populated dynamically as buttons are created.
-		self.tab_buttons ={}
+		self.tab_buttons = {}
 
 	def main(self):
 		#self contains the user frame (left) and figure frame (right)
@@ -59,7 +62,7 @@ class View(tk.Tk):
 
 		#dynamically create buttons, assign them a command from the controller, and collects buttons/names in the tab_buttons dictionary
 		for name in self.tab_names:
-			button = tk.Button(frame, text=name, command=lambda n=name: self.controller.change_tab(n))
+			button = tk.Button(frame, text=name, command=lambda n=name: self.execute_callback('change_tab', n))
 			self.tab_buttons[name] = button
 			button.pack(side='left', expand=True, fill='x')
 
@@ -93,15 +96,15 @@ class View(tk.Tk):
 		ttk.Label(self.particle_frame, text='Initial x\'').grid(row=1, column=0)
 		self.x_Entry.grid(row=0, column=1)
 		self.xp_Entry.grid(row=1, column=1)
-		tk.Button(self.particle_frame, text='randomize', command = self.randomize_particle).grid(row=2, column=0, columnspan=2, sticky='WE')
+		tk.Button(self.particle_frame, text='randomize', command=self.randomize_particle).grid(row=2, column=0, columnspan=2, sticky='WE')
 
 	def _make_animation_frame(self, parent):
 		frame = tk.Frame(parent)
 		frame.pack(side='top', pady=10)
 
-		self.run_button = tk.Button(frame, text="run", command = self.controller.run_animation)
-		self.continue_button = tk.Button(frame, text="continue", state = 'disabled', command = self.controller.continue_animation)
-		self.clear_button = tk.Button(frame, text="clear", command = self.clear_plots)
+		self.run_button = tk.Button(frame, text="run", command=lambda: self.execute_callback('run_animation'))
+		self.continue_button = tk.Button(frame, text="continue", state='disabled', command=lambda: self.execute_callback('continue_animation'))
+		self.clear_button = tk.Button(frame, text="clear", command=self.clear_plots)
 		self.anim_speed_option = CustomWidgets.PlaySpeedOptionMenu(frame)
 
 		self.anim_speed_option.grid(row = 0, column = 0)
@@ -113,13 +116,23 @@ class View(tk.Tk):
 		self.ellipse_frame = tk.Frame(parent)
 		self.ellipse_frame.pack()
 		self.cell_diagram = CustomWidgets.CellDiagram(self.ellipse_frame)
-		self.ellipse_scale = CustomWidgets.EllipseScale(self.ellipse_frame, command = self.controller.update_ellipse)
+		self.ellipse_scale = CustomWidgets.EllipseScale(self.ellipse_frame, command=lambda scale_value: self.execute_callback('update_ellipse', scale_value))
 
 		self.cell_diagram.grid(row = 0, column = 0)
 		self.ellipse_scale.grid(row = 0, column = 0)
 
 
 
+
+
+	def register_callback(self, callback_name, callback_func):
+		self.callback_registry[callback_name] = callback_func
+
+	def execute_callback(self, callback_name, *args, **kwargs):
+		if callback_name in self.callback_registry:
+			self.callback_registry[callback_name](*args, **kwargs)
+		else:
+			pass
 
 
 
@@ -238,3 +251,8 @@ class View(tk.Tk):
 	def relimit_plots(self, x_max, xp_max, s_max, x_min, xp_min, s_min):
 		self.figure.relimit_orbit_plot(s_min, s_max, x_min, x_max)
 		self.figure.relimit_phase_space_plot(x_min, x_max, xp_min, xp_max) 
+
+if __name__ == '__main__':
+	view = View()
+	view.main()
+	
