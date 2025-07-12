@@ -28,8 +28,8 @@ class View(tk.Tk):
 		self._make_tabs_frame(self.user_frame)
 		self._make_control_frame(self.user_frame)
 
-		#control frame contains all UI frames.
-		#widgets inside these UI frames must use the grid() method for the controller to manage their visibility correctly
+		#control frame contains all other user-control frames.
+		#widgets inside these frames must be placed using the grid() method to make their visibility toggleable. 
 		self._make_lattice_frame(self.control_frame)
 		self._make_particle_frame(self.control_frame)
 		self._make_animation_frame(self.control_frame)
@@ -47,7 +47,7 @@ class View(tk.Tk):
 
 		self.figure = CustomWidgets.plots()
 		self.canvas_widget = FigureCanvasTkAgg(figure=self.figure, master=frame)
-		self.canvas_widget.get_tk_widget().pack( fill='both', expand=True)
+		self.canvas_widget.get_tk_widget().pack(fill='both', expand=True)
 
 	def _make_control_frame(self, frame):
 		self.control_frame = tk.Frame(frame)
@@ -57,9 +57,9 @@ class View(tk.Tk):
 		frame = tk.Frame(frame)
 		frame.pack(side='top', fill='x')
 
-		#dynamically create buttons and assign them a command from the controller
+		#dynamically create buttons, assign them a command from the controller, and collects buttons/names in the tab_buttons dictionary
 		for name in self.tab_names:
-			button = tk.Button(frame, text=name, command = lambda n=name: self.controller.change_tab(n))
+			button = tk.Button(frame, text=name, command=lambda n=name: self.controller.change_tab(n))
 			self.tab_buttons[name] = button
 			button.pack(side='left', expand=True, fill='x')
 
