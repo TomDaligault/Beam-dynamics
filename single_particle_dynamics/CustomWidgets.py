@@ -106,13 +106,13 @@ class plots(Figure):
 		self.orbit_plot.set_title('orbit plot')
 		self.orbit_plot.set_xlabel('s')
 		self.orbit_plot.set_ylabel('x', rotation = 0)
-		self.orbit_scatter = self.orbit_plot.scatter([],[], color = 'tab:blue', s=60, animated=True)
+		self.orbit_scatter = self.orbit_plot.scatter([],[], color = '#d9544f', s=60, animated=True)
 
 		self.phase_space_plot = self.add_subplot(1,2,2)
 		self.phase_space_plot.set_title('phase space plot')
 		self.phase_space_plot.set_xlabel('x')
 		self.phase_space_plot.set_ylabel('x\'', rotation = 0)
-		self.phase_space_scatter = self.phase_space_plot.scatter([],[], color = 'tab:blue', s=60, animated=True)
+		self.phase_space_scatter = self.phase_space_plot.scatter([],[], color = '#d9544f', s=60, animated=True)
 
 		self.orbit_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
 		self.phase_space_plot.set(xlim=(0, 0.1), ylim=(0, 0.1))
