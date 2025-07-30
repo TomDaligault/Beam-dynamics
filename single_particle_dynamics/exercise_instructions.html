@@ -14,6 +14,20 @@ summary {font-weight: bold;margin: -0.5em -0.5em 0; padding: 0.5em;}
 details[open] {padding: 0.5em;}
 
 details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
+
+.hr-with-dot {position: relative; width: 100%;}
+
+.hr-with-dot hr {border: none; border-top: 2px solid #b9b9b9; margin-right: 10px;}
+
+.hr-with-dot .dot {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 6px;
+  height: 6px;
+  background-color: #b9b9b9;
+  border-radius: 50%;}
 </style>
 
 
@@ -24,13 +38,18 @@ details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
 <body>
 	<h1 style="padding-top: 30px;"><span>Single particle dynamics GUI</span></h1>
 
-<hr>
+
+<div class="hr-with-dot">
+  <hr>
+  <span class="dot"></span>
+</div>
+
 <h2>Background</h2>
-<p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for a particle's trajectory through a lattice, as well as its evolution in phase-space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. 
+<p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for a particle's orbit through a lattice, as well as its evolution in phase space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. 
 </p>
 
 <p><br>
-You are encouraged to explore how each parameter affects the single particle dynamics. To facilitate this, there are several exercises built around the GUI. Instructions for each exercise are provided below with guiding questions and answers. Use the different tab buttons on the GUI to configure the controls for each exercise appropriately. The exercises are written for anyone who has a basic familarity with drifts, quadrupoles, transfer matrices, and phase spaces. They emphasis qualitative observations, but many ideas introduced here can be connected to more advanced concepts. 
+You are encouraged to explore how each parameter affects the single particle dynamics. To facilitate this, there are several exercises built around the GUI. Instructions for each exercise are provided below with guiding questions and answers. Use the different tab buttons on the GUI to configure the controls for each exercise appropriately. The exercises are written for anyone who has a basic familarity with linear beam optics, transfer matrices, and phase spaces. They emphasis qualitative observations, but many ideas introduced here can be connected to more advanced concepts. 
 </p>
 
 <p><br>
@@ -38,7 +57,12 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 </p>
 
 
-<hr>
+<div class="hr-with-dot">
+  <hr>
+  <span class="dot"></span>
+</div>
+
+
 <h2>Exercise 1: Single Cell Behavior</h2>
 <p>In this exercise, you are provided with a pre-defined FODO cell and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
 </p>
@@ -69,13 +93,13 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 </p>
 
 <details>
-  <summary>What happens to the particle trajectory as the focal length becomes much longer than the drift length?</summary> 
+  <summary>What happens to the particle orbit as the focal length becomes much longer than the drift length?</summary> 
 	<p>You should see a sinusoidal oscillation taking form, you may need to increase the number of cells to see the full oscillation. This is characteristic of a weakly focused lattice. Note that the element-to-element motion is still piece-wise linear. 
 </p>
 </details>
 
 <details>
-  <summary>What happens to the particle trajectory if the focal length becomes too short? Be mindful of the scale on your axes, note that you can use decimal focal lengths.</summary> 
+  <summary>What happens to the particle orbit if the focal length becomes too short? Be mindful of the scale on your axes, note that you can use decimal focal lengths.</summary> 
 	<p>Over-focused lattices cause unstable orbits - the position and divergence errors grow exponentially.
 </p>
 </details>
