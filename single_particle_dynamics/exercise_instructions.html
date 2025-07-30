@@ -1,159 +1,177 @@
 <!DOCTYPE html>
 <html>
 
+<style>
+body {background-color: #1a1a1a; color: #b9b9b9; padding-left: 15%; padding-right: 15%}
+h1 {text-align: center;}
+h2 {text-align: center; padding: 30px 30px}
+p {font-size: 20px;}
+
+details {background-color: #212121; border: 1px solid #aaa; border-radius: 4px; padding: 0.5em 0.5em 0;}
+
+summary {font-weight: bold;margin: -0.5em -0.5em 0; padding: 0.5em;}
+
+details[open] {padding: 0.5em;}
+
+details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
+</style>
 
 
 <head>
 	<title>Single particle dynamics GUI</title>
 </head>
 
+<body>
+	<h1 style="padding-top: 30px;"><span>Single particle dynamics GUI</span></h1>
 
-
-<body >
-	<h1><span>Single particle dynamics GUI</span></h1>
-
-
-<ul>
-<li class="toclevel-1 tocsection-1"><a href="#Background"><span class="tocnumber">1</span> <span class="toctext">Background</span></a></li>
-<li class="toclevel-1 tocsection-2"><a href="#Exercises"><span class="tocnumber">2</span> <span class="toctext">Exercises</span></a>
-<ul>
-<li class="toclevel-2 tocsection-3"><a href="#Exercise_1:_single_cell_behavior"><span class="tocnumber">2.1</span> <span class="toctext">Exercise 1: single cell behavior</span></a></li>
-<li class="toclevel-2 tocsection-4"><a href="#Exercise_2:_Fixed_initial_conditions"><span class="tocnumber">2.2</span> <span class="toctext">Exercise 2: Fixed initial conditions</span></a></li>
-<li class="toclevel-2 tocsection-5"><a href="#Exercise_3:_cell-to-cell_behavior"><span class="tocnumber">2.3</span> <span class="toctext">Exercise 3: cell-to-cell behavior</span></a></li>
-<li class="toclevel-2 tocsection-6"><a href="#Exercise_4:_Importance_of_initial_conditions"><span class="tocnumber">2.4</span> <span class="toctext">Exercise 4: Importance of initial conditions</span></a></li>
-<li class="toclevel-2 tocsection-7"><a href="#Continued_exploration"><span class="tocnumber">2.5</span> <span class="toctext">Continued exploration</span></a></li>
-</ul>
-</li>
-</ul>
-</div>
-
-
+<hr>
 <h2>Background</h2>
+<p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for a particle's trajectory through a lattice, as well as its evolution in phase-space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. 
+</p>
 
-<p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for the a particle's trajectory through a lattice, as well as its evolution in phase-space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. Currently, the GUI can be launched from LCLSHome &gt; User Dev &gt; Tom's button. 
-</p><p><br />
-You are encouraged to explore how each parameter affects the single particle dynamics. To facilitate this, there are several exercises built around the GUI. Instructions for each exercise are provided below with guiding questions and answers. Use the different tab buttons on the GUI to configure the controls for each exercise appropriately. The exercises are written for an early career operator with a basic understanding of drifts, quadrupoles, and transfer matrices. They emphasis qualitative observations, but many ideas introduced here can be connected to more advanced concepts. 
-</p><p><br />
-Underneath the hood, the GUI uses transfer matrices to propagate the particle's initial condition through each lattice element - starting with a focusing quad and using the thin-lens approximation. Note that the animation alots equal time for each lattice element, meaning the particle will appear to take the same amount of time to pass through the drift spaces as it does to pass through the quadrupoles. This is done to emphasis the effect of each element in phase space, but results in the trajectory plot appearing to pause at each quadrupole. A real-world observer would instead see particles instantaneous passing through thin quadrupoles.
+<p><br>
+You are encouraged to explore how each parameter affects the single particle dynamics. To facilitate this, there are several exercises built around the GUI. Instructions for each exercise are provided below with guiding questions and answers. Use the different tab buttons on the GUI to configure the controls for each exercise appropriately. The exercises are written for anyone who has a basic familarity with drifts, quadrupoles, transfer matrices, and phase spaces. They emphasis qualitative observations, but many ideas introduced here can be connected to more advanced concepts. 
+</p>
+
+<p><br>
+Underneath the hood, the GUI uses transfer matrices to propagate a particle through each element of a FODO lattice - starting at the entrance of a focusing quad and using the thin-lens approximation. Note that the animation alots equal time for each lattice element, meaning the particle will appear to take the same amount of time to pass through the drift spaces as it does to pass through the quadrupoles. A real-world observer would instead see particles instantaneous pass through thin quadrupoles. This is done to emphasis the effect of each element in phase space, but results in the orbit plot appearing to pause at each quadrupole. 
 </p>
 
 
-
-
-
-<h2>Exercises</h2>
-
-
-<h4>Exercise 1: single cell behavior</h4>
-
-<p>In this exercise, you are provided with a single cell of a predetermined FODO lattice and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
-
-</p><p>Using the input boxes for <i>x</i> and <i>x'</i>, use the <i>run</i> button to see how that particle moves through the cell. Run the animation a few more times using different initial conditions. The plots will naturally retain the history of previous runs to help you compare different scenarios, but you can clear the plots at any time using the <i>clear</i> button.
-
+<hr>
+<h2>Exercise 1: Single Cell Behavior</h2>
+<p>In this exercise, you are provided with a pre-defined FODO cell and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
 </p>
-<pre>Qualitatively, what can you say about the motion of particles in phase space?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>The particle undergoes some piece-wise, linear motion in phase space. On the phase space plot, horizontal lines correspond to motion through the drift spaces while vertical lines correspond to motion through the quadrupoles. 
+
+<p>Set the particle's initial conditions using the input boxes for <i>x</i> and <i>x'</i>, then use the <i>run</i> button to see how that particle moves through the cell. Run the animation a few more times using different initial conditions. The plots will naturally retain the history of previous runs to help you compare different scenarios, but you can clear the plots at any time using the <i>clear</i> button.
 </p>
-</div>
-<pre>Looking at the trajectory plot, can you find the <i>s</i>> location of the defocusing quadrupole? 
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p><i>s=10</i>. The defocusing quad pushes particles away from its magnetic center in the <i>x</i> plane.
-</p>
-</div>
-<pre>Can you find some special initial conditions with unique behavior?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>The trivial case is (<i>x</i>, <i>x'</i>) = (0, 0). This passes through the magnetic center of both quads; in phase space, this particle stays at the origin. There are other interesting cases when the particle passes through the magnetic center of the defocusing quad. 
-</p>
-</div>
-<h4><span class="mw-headline" id="Exercise_2:_Fixed_initial_conditions">Exercise 2: Fixed initial conditions</span></span></h4>
+
+<details>
+  <summary>Qualitatively, what can you say about the motion of particles in phase space?</summary>
+  <p>The particle undergoes some piece-wise, linear motion in phase space. On the phase space plot, horizontal lines correspond to motion through the drift spaces while vertical lines correspond to motion through the quadrupoles. 
+  </p>
+</details>
+
+<details>
+  <summary>Looking at the orbit plot, can you find the <i>s</i> location of the defocusing quadrupole? </summary> 
+	<p><i>s=10</i>. The defocusing quad pushes particles away from its magnetic center in the <i>x</i> plane.
+	</p>
+</details>
+
+<details>
+  <summary>Can you find some special initial conditions with unique behavior?</summary> 
+	<p>The trivial case is (<i>x</i>, <i>x'</i>) = (0, 0). This passes through the magnetic center of both quads. If you are clever, you can also find initial conditons to make the particle pass through the magnetic center of the defocusing quad. 
+	</p>
+</details>
+
+<h2>Exercise 2: Fixed Initial Conditions</h2>
 <p>In this exercise, you are provided with fixed initial conditions but are given control over all the lattice parameters. The goal is to get a feel for how different lattices affect the same particle. Try adjusting each parameter separately to see how they affect the particle dynamics.
 </p>
-<pre>What happens to the particle trajectory as the focal length becomes much longer than the drift length? 
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>You should see a sinusoidal oscillation take form over many cells; this is characteristic of a weakly focusing lattice. Note that the cell-to-cell motion is still piece-wise linear. 
-</p><p><br/>
-Informally, operators would likely call this kind of feature on an orbit display a betatron oscillation. While the underlying principles for this oscillation are the same, be mindful that the orbit display show the behavior of a multi-particle system while this GUI show single particles.
+
+<details>
+  <summary>What happens to the particle trajectory as the focal length becomes much longer than the drift length?</summary> 
+	<p>You should see a sinusoidal oscillation taking form, you may need to increase the number of cells to see the full oscillation. This is characteristic of a weakly focused lattice. Note that the element-to-element motion is still piece-wise linear. 
 </p>
-</div>
-<pre>What happens to the particle trajectory if the focal length becomes too short? Be mindful of the scale on your axes, you may want to only use a small number of cells.
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>Over-focused lattices cause unstable oscillations in the orbit - the position error grows exponentially.
+</details>
+
+<details>
+  <summary>What happens to the particle trajectory if the focal length becomes too short? Be mindful of the scale on your axes, note that you can use decimal focal lengths.</summary> 
+	<p>Over-focused lattices cause unstable orbits - the position and divergence errors grow exponentially.
 </p>
-</div>
-<pre>Can you find the boundary between stable and unstable orbits?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>The boundary occurs when the focal length is half of the drift length. At this point, the position error grows linearly. Compare the behavior for lattices just a small fraction above and below this threshold.
+</details>
+
+<details>
+  <summary>Can you find the boundary between stable and unstable orbits?</summary> 
+  <p>The boundary occurs when the focal length is half of the drift length. At this point, the errors grow linearly. Compare the behavior for lattices that are just barely above and below this threshold.
 </p>
-</div>
-<pre>What do you think would change if you could make the focal length negative?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>Using a negative focal length exchanges the focusing and defocusing quadrupoles.
+</details>
+
+<details>
+  <summary>How would the lattice change if you could make the focal length negative?</summary> 
+<p>Using a negative focal length exchanges the focusing and defocusing quadrupoles: FODO -> DOFO. Try it!
 </p>
-</div>
-<h4><span class="mw-headline" id="Exercise_3:_cell-to-cell_behavior">Exercise 3: cell-to-cell behavior</span></span></h4>
-<p>The only change for this exercise is that the animations add markers to every point that corresponds to the entrance of every focusing quad in the lattice. This is done to highlight the cell-to-cell behavior of the particle. Again, try adjusting each parameter separately to see how they affect the cell-to-cell behavior.
+</details>
+
+
+
+<h2>Exercise 3: Cell-to-Cell Behavior</h2>
+<p>The only functional change for this exercise is that the animations add markers to every point that corresponds to the entrance of every focusing quad in the lattice. This is done to highlight the cell-to-cell behavior of the particle. Again, try adjusting each parameter separately to see how they affect the cell-to-cell behavior.
 </p>
-<pre>Qualitatively, what is the cell-to-cell phase space behavior of a particle through a FODO lattice?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>Cell-to-cell, the single particle traces out an ellipse.
+
+<details>
+  <summary>What is the cell-to-cell behavior of the particle's orbit through a FODO lattice?</summary> 
+<p>The orbit plot shows that the cell-to-cell motion of a particle is sinusoidal. This is more apparent for weakly focused lattices, but you may need to use more cells to see the a complete oscillation.
 </p>
-</div>
-<pre>Does the cell-to-cell behavior depend on the lattice?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>Yes, different lattices will cause the particle to trace out different ellipses.
+</details>
+
+<details>
+  <summary>What is the cell-to-cell phase space behavior of a particle through a FODO lattice?</summary> 
+<p>Cell-to-cell, the particle traces out an ellipse if given enough cells.
 </p>
-</div>
-<p><br />
-For stable lattices, the cell-to-cell motion of a particle is periodic. One full cycle around the ellipse represents 360deg of phase in that oscillation. The phase advance of a lattice quantifies how much progress in that oscillation a particle makes across a single cell of the lattice. 
-</p><p><br />
+</details>
+
+<details>
+  <summary>Does the cell-to-cell behavior depend on the lattice?</summary> 
+<p>Yes, changing the lattices will cause the particle to trace out different ellipses.
 </p>
-<pre>Roughly speaking, what is the phase advance of a lattice with a drift length of 10 and a focal length of 16?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>After 10 cells, the particle almost returns to its initial conditions, meaning the amount of phase advanced per cell is roughly 36deg. Because the particle slightly overshoots, we can say that the phase advance must be slightly greater. 
+</details>
+
+<p><br>
+For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One full oscillation corresponds to tracing one full ellipse in phase space, or equivolently, one full wavelength on the orbit plot. Each cell of the lattice advances the phase of the particle's oscillation, but the amount that each cell contributes depends on the lattice parameters. To quantify this, let's define the <i>phase advance</i> of a lattice as the amount of phase, in degrees, that each cell contributes to that oscillation. 
 </p>
-</div>
-<pre>What happens to the phase advance as the focal length increases relative to the drift length?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
+
+<details>
+  <summary>What is the phase advance of a lattice whose drift length is equal to its focal length?</summary> 
+<p>It takes exactly 6 cells for a particle to return to it's initial conditions, so the phase advance is 60&deg. 
+</p>
+</details>
+
+<details>
+  <summary>Roughly speaking, what is the phase advance of a lattice with a drift length of 10 and a focal length of 16?</summary> 
+<p>After 10 cells, the particle almost returns to its initial conditions, meaning the amount of phase advanced per cell is roughly 36&deg. Because the particle slightly overshoots, we can say that the phase advance must be slightly greater. 
+</p>
+</details>
+
+<details>
+  <summary>What happens to the phase advance as the focal length increases relative to the drift length?</summary>
 <p>With a longer focal length, the particle needs more cells to complete a full oscillation so the phase advance decreased.
 </p>
-</div>
-<h4><span class="mw-headline" id="Exercise_4:_Importance_of_initial_conditions">Exercise 4: Importance of initial conditions</span></h4>
-<p>For this exercise, the animation will continue to highlight the cell-to-cell behavior. This time, the lattice is fixed but you have control over the particle's initial conditions. You are also given an additional control to choose where the cell-to-cell behavior is defined from. Start by running the animation for several particles with different initial conditions.
+</details>
+
+
+
+
+
+<h2>Exercise 4: Importance of Initial Conditions</h2>
+<p>For this exercise, the animation will continue to highlight the cell-to-cell behavior. This time, the lattice is fixed but you have control over the particle's initial conditions. You are also given a slider to choose where the cell-to-cell behavior is defined from. Start by running the animation for several particles with different initial conditions.
 </p>
-<pre>How do the initial conditions affect the phase space ellipse?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>While different initial conditions will trace out ellipses of different sizes, it's important to recognize that the shape and orientation is unaffected; these properties are uniquely determined by the lattice.
-</p><p><br />
-The initial conditions also determine the initial phase of the particle's cell-to-cell oscillation. In other words, they determine which point of the ellipse the particle starts on.
+
+<details>
+  <summary>How do the initial conditions affect the phase space ellipse?</summary>
+<p>Different initial conditions will trace out ellipses of different sizes. It's important to recognize that the shape and orientation of the ellipse are unaffected; these properties are uniquely determined by the lattice. The initial conditions also determine the initial phase of the particle's cell-to-cell oscillation.
 </p>
-</div>
-<pre>Adjust the slider such that the cell-to-cell behavior is now define from the center of the defocusing quad. How does this affect the phase space ellipse?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
+</details>
+
+<details>
+  <summary>Adjust the slider such that the cell-to-cell behavior is now define from the center of the defocusing quad. How does this affect the phase space ellipse?</summary>
 <p>Watch as you step the slider over until you reach the center of the defocusing quad. You should see a continuous transformation of the phase space ellipse; this hints that the transfer matrices can also describe the transformation of the phase space ellipse. Note that the area of the ellipse is conserved during the transformation.
 </p>
-</div>
-<pre>How would you describe the transformation of the phase space ellipse across a drift space?
-</pre>
-<div class="toccolours mw-collapsible mw-collapsed">
-<p>Drift spaces <i>shear</i> the phase space ellipse. To see this, step the slider from the start to end of one of the drift spaces. 
+</details>
+
+<details>
+  <summary>How would you describe the transformation of the phase space ellipse across a drift space?</summary>
+<p>Drift spaces <i>shear</i> the phase space ellipse horizontally. To see this, step the slider from the start to end of one of the drift spaces. 
 </p>
-</div>
-<h4><span class="mw-headline" id="Continued_exploration">Continued exploration</span></h4>
-<p>The sandbox version of this GUI gives you unrestricted access to every parameter, plus control over the animation speed. It also includes a <i>continue</i> button which will let you use the output of your previous run as initial conditions for a subsequent animation. This means that you can explore the dynamics of a particle passing through several different lattices.
+</details>
+
+
+
+
+<h2>Continued Exploration</h2>
+<p>The unlabled tab button will configure a sandbox version of this GUI with unrestricted access to every parameter, including a <i>continue</i> button which will let you use the output of your previous run as initial conditions for the subsequent animation. This allows you to easily explore the dynamics of a particle passing through several different lattices.
+</p>
+
+<p style="padding-bottom: 60px;">To start, run the animation using the default particle and lattice inputs, then double the focal length and continue the run. You should see that the particle started tracing out a different phase space ellipse - changing the lattice changes the phase space ellipse. You should also see that the new lattice but did not have enough cells for the particle to complete one oscillation - changing the lattice changes the phase advance. Now, return to the original lattice and continue the run again. The particle goes back to tracing out the original phase space ellipse but the size has increased - the ellipse's size depends on the initial conditions of the particle. Can you get the particle back onto the orginal ellipse?
 </p>
 
 
