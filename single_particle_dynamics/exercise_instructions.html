@@ -39,11 +39,7 @@ details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
 	<h1 style="padding-top: 30px;"><span>Single particle dynamics GUI</span></h1>
 
 
-<div class="hr-with-dot">
-  <hr>
-  <span class="dot"></span>
-</div>
-
+<hr>
 <h2>Background</h2>
 <p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for a particle's orbit through a lattice, as well as its evolution in phase space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. 
 </p>
@@ -57,12 +53,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 </p>
 
 
-<div class="hr-with-dot">
-  <hr>
-  <span class="dot"></span>
-</div>
-
-
+<hr>
 <h2>Exercise 1: Single Cell Behavior</h2>
 <p>In this exercise, you are provided with a pre-defined FODO cell and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
 </p>
@@ -94,7 +85,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 
 <details>
   <summary>What happens to the particle orbit as the focal length becomes much longer than the drift length?</summary> 
-	<p>You should see a sinusoidal oscillation taking form, you may need to increase the number of cells to see the full oscillation. This is characteristic of a weakly focused lattice. Note that the element-to-element motion is still piece-wise linear. 
+	<p>You should see a sinusoidal oscillation taking form, you may need to increase the number of cells to see the full oscillation. This is characteristic of an under-focused lattice. Note that the element-to-element motion is still piece-wise linear. 
 </p>
 </details>
 
@@ -124,24 +115,25 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 
 <details>
   <summary>What is the cell-to-cell behavior of the particle's orbit through a FODO lattice?</summary> 
-<p>The orbit plot shows that the cell-to-cell motion of a particle is sinusoidal. This is more apparent for weakly focused lattices, but you may need to use more cells to see the a complete oscillation.
+<p>When only considering the cell-to-cell motion, the orbit plot shows that particle motion is sinusoidal. This is more apparent for under-focused lattices, but you may need to use more cells to see the a complete oscillation.
+
 </p>
 </details>
 
 <details>
   <summary>What is the cell-to-cell phase space behavior of a particle through a FODO lattice?</summary> 
-<p>Cell-to-cell, the particle traces out an ellipse if given enough cells.
+<p>Cell-to-cell, the particle traces out points on an ellipse.
 </p>
 </details>
 
 <details>
   <summary>Does the cell-to-cell behavior depend on the lattice?</summary> 
-<p>Yes, changing the lattices will cause the particle to trace out different ellipses.
+<p>Yes, changing the lattices will cause the particle to trace out points of different ellipses.
 </p>
 </details>
 
 <p><br>
-For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One full oscillation corresponds to tracing one full ellipse in phase space, or equivolently, one full wavelength on the orbit plot. Each cell of the lattice advances the phase of the particle's oscillation, but the amount that each cell contributes depends on the lattice parameters. To quantify this, let's define the <i>phase advance</i> of a lattice as the amount of phase, in degrees, that each cell contributes to that oscillation. 
+For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One full oscillation corresponds to tracing one full ellipse in phase space, or equivolently, one full wavelength on the orbit plot. This is called a <i>betatron oscillation</i>. Each cell of the lattice advances the phase of the betatron oscillation, but the amount that each cell contributes depends on the lattice parameters. To quantify this, let's define the <i>phase advance</i> of a lattice as the amount of phase, in degrees, that each cell contributes to the betatron oscillation. 
 </p>
 
 <details>
@@ -195,9 +187,15 @@ For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One fu
 <p>The unlabled tab button will configure a sandbox version of this GUI with unrestricted access to every parameter, including a <i>continue</i> button which will let you use the output of your previous run as initial conditions for the subsequent animation. This allows you to easily explore the dynamics of a particle passing through several different lattices.
 </p>
 
-<p style="padding-bottom: 60px;">To start, run the animation using the default particle and lattice inputs, then double the focal length and continue the run. You should see that the particle started tracing out a different phase space ellipse - changing the lattice changes the phase space ellipse. You should also see that the new lattice but did not have enough cells for the particle to complete one oscillation - changing the lattice changes the phase advance. Now, return to the original lattice and continue the run again. The particle goes back to tracing out the original phase space ellipse but the size has increased - the ellipse's size depends on the initial conditions of the particle. Can you get the particle back onto the orginal ellipse?
+<p >To start, run the animation using the default particle and lattice inputs, then double the focal length and continue the run. You should see that the particle started tracing out a different phase space ellipse - changing the lattice changes the phase space ellipse. You should also see that the new lattice but did not have enough cells for the particle to complete one oscillation - changing the lattice changes the phase advance. Now, return to the original lattice and continue the run again. The particle goes back to tracing out the original phase space ellipse but the size has increased - the ellipse's size depends on the initial conditions of the particle. Can you get the particle back onto the orginal ellipse?
 </p>
 
+<div class="hr-with-dot">
+  <hr>
+  <span class="dot"></span>
+</div>
+
+<p style="padding-bottom: 60px;"></p>
 
 </body>
 </html>
