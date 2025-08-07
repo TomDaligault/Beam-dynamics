@@ -5,6 +5,7 @@
 body {background-color: #1a1a1a; color: #b9b9b9; padding-left: 15%; padding-right: 15%}
 h1 {text-align: center;}
 h2 {text-align: center;}
+h3 {text-align: center; padding-top: 50px}
 p {font-size: 20px;}
 
 details {background-color: #212121; border: 1px solid #aaa; border-radius: 4px; padding: 0.5em 0.5em 0;}
@@ -237,7 +238,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
   <script>setTimeout(() => {particle_hr('hr2_canvas', "hr2_container")}, 8000)</script>
 </div>
 
-<h2>Exercise 1: Single Cell Behavior</h2>
+<h3>Exercise 1: Single Cell Behavior</h3>
 <p>In this exercise, you are provided with a pre-defined FODO cell and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
 </p>
 
@@ -262,7 +263,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 	</p>
 </details>
 
-<h2>Exercise 2: Fixed Initial Conditions</h2>
+<h3 style='margin: 20px;'>Exercise 2: Fixed Initial Conditions</h3>
 <p>In this exercise, you are provided with fixed initial conditions but are given control over all the lattice parameters. The goal is to get a feel for how different lattices affect the same particle. Try adjusting each parameter separately to see how they affect the particle dynamics.
 </p>
 
@@ -292,7 +293,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 
 
 
-<h2>Exercise 3: Cell-to-Cell Behavior</h2>
+<h3>Exercise 3: Cell-to-Cell Behavior</h3>
 <p>The only functional change for this exercise is that the animations add markers to every point that corresponds to the entrance of every focusing quad in the lattice. This is done to highlight the cell-to-cell behavior of the particle. Again, try adjusting each parameter separately to see how they affect the cell-to-cell behavior.
 </p>
 
@@ -341,7 +342,7 @@ For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One fu
 
 
 
-<h2>Exercise 4: Importance of Initial Conditions</h2>
+<h3>Exercise 4: Importance of Initial Conditions</h3>
 <p>For this exercise, the animation will continue to highlight the cell-to-cell behavior. This time, the lattice is fixed but you have control over the particle's initial conditions. You are also given a slider to choose where the cell-to-cell behavior is defined from. Start by running the animation for several particles with different initial conditions.
 </p>
 
@@ -366,7 +367,7 @@ For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One fu
 
 
 
-<h2>Continued Exploration</h2>
+<h3>Continued Exploration</h3>
 <p>The unlabeled tab button will configure a sandbox version of this GUI with unrestricted access to every parameter, including a <i>continue</i> button which will let you use the output of your previous run as initial conditions for the subsequent animation. This allows you to easily explore the dynamics of a particle passing through several different lattices.
 </p>
 
