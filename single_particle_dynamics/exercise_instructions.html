@@ -4,7 +4,7 @@
 <style>
 body {background-color: #1a1a1a; color: #b9b9b9; padding-left: 15%; padding-right: 15%}
 h1 {text-align: center;}
-h2 {text-align: center; padding: 30px 30px}
+h2 {text-align: center;}
 p {font-size: 20px;}
 
 details {background-color: #212121; border: 1px solid #aaa; border-radius: 4px; padding: 0.5em 0.5em 0;}
@@ -15,11 +15,11 @@ details[open] {padding: 0.5em;}
 
 details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
 
-.hr-with-dot {position: relative; width: 100%;}
+.hr_with_particle {position: relative; width: 100%;}
 
-.hr-with-dot hr {border: none; border-top: 2px solid #b9b9b9; margin-right: 10px;}
+.hr_with_particle hr {border: none; border-top: 2px solid #b9b9b9; margin-right: 10px;}
 
-.hr-with-dot .dot {
+.hr_with_particle .particle {
   position: absolute;
   right: 0;
   top: 50%;
@@ -31,6 +31,180 @@ details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
 </style>
 
 
+<script>
+function particle_hr(canvasID, containerID) {
+  const container = document.getElementById(containerID);
+  const canvas = document.getElementById(canvasID);
+  const ctx = canvas.getContext('2d');
+
+  // Match canvas size to container
+  const { width, height } = container.getBoundingClientRect();
+  canvas.width = width;
+  canvas.height = height;
+
+  // Animation parameters
+  const speed = 1.2;
+  const trailLength = 200;
+  const trailOffset = 10;
+  const dotRadius = 5;
+  const yCenter = height / 2;
+
+  let x = 0;
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Trail gradient
+    const grad = ctx.createLinearGradient(x, 0, x - trailLength, 0);
+    grad.addColorStop(0, "rgba(48, 48, 48, 1)");
+    grad.addColorStop(1, "rgba(48, 48, 48, 0)");
+
+    // Draw trail
+    ctx.beginPath();
+    ctx.moveTo(x - trailLength, yCenter);
+    ctx.lineTo(x - trailOffset, yCenter);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw dot
+    ctx.beginPath();
+    ctx.arc(x, yCenter, dotRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Update position
+    x += speed;
+    if (x > width + trailLength) x = 0;
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+</script>
+
+<script>
+// Multiply 2×2 matrix by 2D vector
+function MVP(matrix, vector) {
+  return [
+    matrix[0][0] * vector[0] + matrix[0][1] * vector[1],
+    matrix[1][0] * vector[0] + matrix[1][1] * vector[1]
+  ];
+}
+
+// Create a particle vector [x, x']
+function make_particle(x, xp) {
+  return [x, xp];
+}
+
+// Create a drift space transfer matrix for length L
+function make_drift_matrix(L) {
+  return [
+    [1, L],
+    [0, 1]
+  ];
+}
+
+// Create a focusing quadrupole matrix with focal length f
+function make_quad_matrix(f) {
+  return [
+    [1, 0],
+    [1 / f, 1]
+  ];
+}
+</script>
+
+
+<script>
+function phase_space_animation(canvasID, containerID) {
+const container = document.getElementById(containerID);
+const {width, height} = container.getBoundingClientRect();
+
+const canvas = document.getElementById(canvasID);
+canvas.width = width;
+canvas.height = height; //scale canvas to fit the container
+
+const ctx = canvas.getContext('2d');
+
+let num_cells = 6
+let element_divisions = 10
+let particle = make_particle(1,-0.1)
+let drift_matrix = make_drift_matrix(10/element_divisions)
+let fquad_matrix = make_quad_matrix(-10*element_divisions)
+let dquad_matrix = make_quad_matrix(10*element_divisions)
+
+let orbit = [particle]
+
+for (cell=1; cell<=num_cells;cell++) {
+  for(i=1; i<=element_divisions; i++) {
+  particle = MVP(fquad_matrix, particle)
+  orbit.push(particle)
+}
+  for(i=1; i<=element_divisions; i++) {
+    particle = MVP(drift_matrix, particle)
+    orbit.push(particle)
+  }
+
+  for(i=1; i<=element_divisions; i++) {
+    particle = MVP(dquad_matrix, particle)
+    orbit.push(particle)
+  }
+  for(i=1; i<=element_divisions; i++) {
+    particle = MVP(drift_matrix, particle)
+    orbit.push(particle)
+  }
+}
+  const scale = canvas.height/6;
+  const radius = 5;
+
+  // Move origin to bottom-left and flip y-axis
+  ctx.translate(0, canvas.height);
+  ctx.scale(1, -1);
+  ctx.lineWidth = 2;
+
+let windowStart = 0;
+const windowSize = 15;
+
+function drawWindow() {
+  //clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+  //iterate through the window size (-1)
+  for (let i = 0; i < windowSize - 1; i++) {
+    //Grab i and i+1, offset by windowStart, modulo the length of the data
+    const index1 = (windowStart + i) % orbit.length;
+    const index2 = (windowStart + i + 1) % orbit.length; 
+
+    //grab adjacent points
+    const [x1, y1] = orbit[index1];
+    const [x2, y2] = orbit[index2]; 
+
+    //translate the point (0,0) to the center of the canvas, scale data up to fit the canvas well
+    const px1 = x1 * scale + canvas.width / 2;
+    const px2 = x2 * scale + canvas.width / 2;
+    const py1 = y1 * scale * 10 + canvas.height / 2;
+    const py2 = y2 * scale * 10 + canvas.height / 2;
+
+    //draw a line segment to the next point
+    ctx.beginPath();
+    ctx.moveTo(px1, py1);
+    ctx.lineTo(px2, py2);
+
+
+    //set alpha based on how far we are through the window.
+    let alpha = (i + 1) / (windowSize);
+    if (i > windowSize*0.5) alpha = 1 - (i + 1) / windowSize;
+    ctx.strokeStyle = `rgba(185, 185, 185, ${alpha})`;
+    ctx.stroke();
+}
+
+  windowStart = (windowStart + 1) % orbit.length;
+  requestAnimationFrame(drawWindow);
+}
+drawWindow();
+}
+</script>
+
 <head>
 	<title>Single particle dynamics GUI</title>
 </head>
@@ -39,7 +213,11 @@ details[open] summary {border-bottom: 1px solid #aaa; margin-bottom: 0.5em;}
 	<h1 style="padding-top: 30px;"><span>Single particle dynamics GUI</span></h1>
 
 
-<hr>
+<div id="hr1_container" style="width: 100%; height: 50px;">
+  <canvas id="hr1_canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+  <script>particle_hr('hr1_canvas', "hr1_container" )</script>
+</div>
+
 <h2>Background</h2>
 <p>This article is intended to provide a series of self-guided exercises for the Single Particle Dynamics GUI. The GUI is built to visualize the propagation of single particles through FODO lattices. It generates animations for a particle's orbit through a lattice, as well as its evolution in phase space. Users are given control over the particle's initial conditions, the focal length of the quadrupoles, the drift length between quadrupoles, and the total number of cells. 
 </p>
@@ -53,7 +231,12 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 </p>
 
 
-<hr>
+
+<div id="hr2_container" style="width: 100%; height: 50px;">
+  <canvas id="hr2_canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+  <script>setTimeout(() => {particle_hr('hr2_canvas', "hr2_container")}, 8000)</script>
+</div>
+
 <h2>Exercise 1: Single Cell Behavior</h2>
 <p>In this exercise, you are provided with a pre-defined FODO cell and given control over initial conditions of a particle traveling through that cell. The goal is to simply get a feel for the motion of particles in a FODO lattice. 
 </p>
@@ -75,7 +258,7 @@ Underneath the hood, the GUI uses transfer matrices to propagate a particle thro
 
 <details>
   <summary>Can you find some special initial conditions with unique behavior?</summary> 
-	<p>The trivial case is (<i>x</i>, <i>x'</i>) = (0, 0). This passes through the magnetic center of both quads. If you are clever, you can also find initial conditons to make the particle pass through the magnetic center of the defocusing quad. 
+	<p>The trivial case is (<i>x</i>, <i>x'</i>) = (0, 0). This passes through the magnetic center of both quads. If you are clever, you can also find initial conditons to make the particle pass through the magnetic center of the defocusing quad (<i>1</i>, <i>0.025</i>), or where the focusing quad cancels the initial divergence(<i>1</i>, <i>0.125</i>). 
 	</p>
 </details>
 
@@ -184,18 +367,24 @@ For stable lattices, the cell-to-cell motion of a particle is sinusoidal. One fu
 
 
 <h2>Continued Exploration</h2>
-<p>The unlabled tab button will configure a sandbox version of this GUI with unrestricted access to every parameter, including a <i>continue</i> button which will let you use the output of your previous run as initial conditions for the subsequent animation. This allows you to easily explore the dynamics of a particle passing through several different lattices.
+<p>The unlabeled tab button will configure a sandbox version of this GUI with unrestricted access to every parameter, including a <i>continue</i> button which will let you use the output of your previous run as initial conditions for the subsequent animation. This allows you to easily explore the dynamics of a particle passing through several different lattices.
 </p>
 
 <p >To start, run the animation using the default particle and lattice inputs, then double the focal length and continue the run. You should see that the particle started tracing out a different phase space ellipse - changing the lattice changes the phase space ellipse. You should also see that the new lattice but did not have enough cells for the particle to complete one oscillation - changing the lattice changes the phase advance. Now, return to the original lattice and continue the run again. The particle goes back to tracing out the original phase space ellipse but the size has increased - the ellipse's size depends on the initial conditions of the particle. Can you get the particle back onto the orginal ellipse?
 </p>
 
-<div class="hr-with-dot">
-  <hr>
-  <span class="dot"></span>
+
+
+<div id="phase_space_container" style="width: 100%; height: 200px;">
+  <canvas id="space_space_canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+  <script>phase_space_animation('space_space_canvas',"phase_space_container")</script>
 </div>
 
-<p style="padding-bottom: 60px;"></p>
+
+
+
+<p style="padding-bottom: 10px;"></p>
+
 
 </body>
 </html>
