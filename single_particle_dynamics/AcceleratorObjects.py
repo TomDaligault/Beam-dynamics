@@ -4,7 +4,7 @@ import numpy as np
 '''Defines transfer matrices from give lattice parameters.'''
 '''Supports optionally subdividing lattice elements via quad_steps and drift_steps. Default is 5 subdivisions.'''
 class Lattice:
-    def __init__(self, drift_length, focal_length, num_cells, quad_steps = 5, drift_steps = 5):
+    def __init__(self, drift_length, focal_length, num_cells, quad_steps = 9, drift_steps = 9):
         self.focal_length = focal_length
         self.drift_length = drift_length
         self.quad_steps = quad_steps
